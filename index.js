@@ -38,14 +38,20 @@ app.get('/', (req, res) => {
 app.post('/api/users', async (req, res) => {
   try {
     const username = req.body.username;
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
+    }
+
     const user = new User({ username });
     const savedUser = await user.save();
+
     res.json({ username: savedUser.username, _id: savedUser._id });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to create user' });
+    console.error('Error in POST /api/users:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 // ✅ FIXED: Correct GET /api/users route
 app.get('/api/users', async (req, res) => {
